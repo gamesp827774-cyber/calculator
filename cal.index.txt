@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple 1-10 Calculator</title>
+    <style>
+        /* Basic styling for the calculator */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+
+        .calculator {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #display {
+            width: 100%;
+            height: 40px;
+            margin-bottom: 10px;
+            padding: 5px;
+            font-size: 1.5em;
+            text-align: right;
+            border: 1px solid #aaa;
+            box-sizing: border-box;
+            background-color: #eaf0f6;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            padding: 15px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .number {
+            background-color: #d1e3ff;
+        }
+
+        .operator {
+            background-color: #ffcc80;
+        }
+
+        .equal {
+            background-color: #a8e6cf;
+            grid-column: span 2; /* Make the equals button wider */
+        }
+
+        .clear {
+            background-color: #ff9999;
+            grid-column: span 2; /* Make the clear button wider */
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+<div class="calculator">
+    <input type="text" id="display" readonly>
+    <div class="buttons">
+        <button class="number" onclick="appendInput('1')">1</button>
+        <button class="number" onclick="appendInput('2')">2</button>
+        <button class="number" onclick="appendInput('3')">3</button>
+        <button class="operator" onclick="appendInput('+')">+</button>
+
+        <button class="number" onclick="appendInput('4')">4</button>
+        <button class="number" onclick="appendInput('5')">5</button>
+        <button class="number" onclick="appendInput('6')">6</button>
+        <button class="operator" onclick="appendInput('-')">-</button>
+
+        <button class="number" onclick="appendInput('7')">7</button>
+        <button class="number" onclick="appendInput('8')">8</button>
+        <button class="number" onclick="appendInput('9')">9</button>
+        <button class="operator" onclick="appendInput('*')">×</button>
+
+        <button class="number" onclick="appendInput('10')">10</button>
+        <button class="clear" onclick="clearDisplay()">C</button>
+        <button class="equal" onclick="calculateResult()">=</button>
+        <button class="operator" onclick="appendInput('/')">÷</button>
+    </div>
+</div>
+
+<script>
+    const display = document.getElementById('display');
+    let currentInput = '';
+
+    /**
+     * Appends the clicked value (number or operator) to the display.
+     * This simple setup allows for multi-digit numbers (like '10').
+     */
+    function appendInput(value) {
+        // Prevent starting with an operator unless it's for 10
+        if (['+', '-', '*', '/'].includes(value) && currentInput === '') {
+            return;
+        }
+
+        // Prevent entering two operators in a row
+        const lastChar = currentInput.slice(-1);
+        if (['+', '-', '*', '/'].includes(lastChar) && ['+', '-', '*', '/'].includes(value)) {
+            // Replace the last operator with the new one
+            currentInput = currentInput.slice(0, -1) + value;
+        } else {
+            currentInput += value;
+        }
+        
+        display.value = currentInput;
+    }
+
+    /**
+     * Clears the display.
+     */
+    function clearDisplay() {
+        currentInput = '';
+        display.value = '';
+    }
+
+    /**
+     * Evaluates the expression currently in the display.
+     */
+    function calculateResult() {
+        if (currentInput === '') {
+            return;
+        }
+        try {
+            // The `eval()` function evaluates a string as JavaScript code.
+            // It's convenient for simple calculators but should be used with caution
+            // in real-world applications as it can execute arbitrary code.
+            // We replace '×' with '*' and '÷' with '/' for `eval` compatibility.
+            const expression = currentInput.replace(/×/g, '*').replace(/÷/g, '/');
+            let result = eval(expression);
+
+            // Handle division by zero
+            if (result === Infinity || result === -Infinity) {
+                currentInput = "Error";
+            } else {
+                // To limit the number of decimal places for cleaner output
+                currentInput = String(Number(result.toFixed(5))); 
+            }
+            
+        } catch (e) {
+            currentInput = "Error";
+        }
+        
+        display.value = currentInput;
+    }
+</script>
+
+</body>
+</html>
